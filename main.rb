@@ -118,9 +118,15 @@ get '/bet' do
 end
 
 post '/bet' do
-  session[:current_bet] = params[:current_bet].to_i
-  session[:pot_total] = session[:pot_total] - session[:current_bet]
-  redirect '/game'
+  if params[:current_bet].to_i != 0
+    session[:current_bet] = params[:current_bet].to_i
+    session[:pot_total] = session[:pot_total] - session[:current_bet]
+    redirect '/game'
+  else
+    @error = "Please enter valid number."
+    halt erb(:bet)
+  end
+
 end
 
 get '/game' do
