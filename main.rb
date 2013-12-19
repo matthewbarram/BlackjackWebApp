@@ -90,10 +90,17 @@ get '/new_player' do
 end
 
 post '/new_player' do
-    if params[:player_name].empty?
-        @error = "Name is required"
-        halt erb(:new_player)
+    name_check = params[:player_name]
+    if name_check.empty?
+      @error = "Name is required"
+      halt erb(:new_player)
     end
+
+    if name_check != name_check[/[a-zA-Z]+/]
+      @error = "Your name can only consist of letters"
+      halt erb(:new_player)
+    end
+
     session[:player_name] = params[:player_name].capitalize
     #progress to the game
     redirect '/game'
