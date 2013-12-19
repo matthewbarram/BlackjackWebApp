@@ -6,6 +6,7 @@ set :sessions, true
 
 BLACKJACK_AMOUNT = 21
 DEALER_MIN_HIT = 17
+BLACKJACK_RATIO = 1.5
 
 helpers do
     def cal_total(cards)
@@ -55,15 +56,19 @@ helpers do
     end
 
     def winner(msg)
-      @success = "<strong>#{session[:player_name]} wins</strong> #{msg}"
+      session[:winning_bet] = session[:current_bet] * BLACKJACK_RATIO
+      session[:pot_total] = session[:pot_total] + session[:winning_bet]
+      @success = "<strong>#{session[:player_name]} wins</strong> #{msg}. Your initial bet of $#{session[:current_bet]} has turned into $#{session[:winning_bet]}. Well done. Your pot is now $#{session[:pot_total]}"
       @show_hit_or_stay_buttons = false
       @play_again = true
     end
 
     def loser(msg)
-      @error = "Player <strong>#{session[:player_name]} loses #{msg}</strong>"
+      @error = "Player <strong>#{session[:player_name]} loses #{msg}</strong>. The bet to the value of $#{session[:current_bet]} was lost. Total pot is now: $#{session[:pot_total]}"
       @show_hit_or_stay_buttons = false
       @play_again = true
+      session[:winning_bet] = 0
+      session[:current_bet] = 0
     end
 
     def tie(msg)
@@ -103,8 +108,20 @@ post '/new_player' do
 
     session[:player_name] = params[:player_name].capitalize
     #progress to the game
-    redirect '/game'
-end 
+
+    session[:pot_total] = 500
+    redirect '/bet'
+end
+
+get '/bet' do
+  erb :bet
+end
+
+post '/bet' do
+  session[:current_bet] = params[:current_bet].to_i
+  session[:pot_total] = session[:pot_total] - session[:current_bet]
+  redirect '/game'
+end
 
 get '/game' do
   session[:turn] = session[:player_name]
