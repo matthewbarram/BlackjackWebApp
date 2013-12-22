@@ -90,6 +90,10 @@ get '/' do
     end
 end
 
+get '/pot_empty' do
+  erb :pot_empty
+end
+
 get '/new_player' do
     erb :new_player
 end
@@ -114,16 +118,20 @@ post '/new_player' do
 end
 
 get '/bet' do
+  if session[:pot_total] <= 0
+    erb :pot_empty
+  else
   erb :bet
+  end
 end
 
 post '/bet' do
-  if params[:current_bet].to_i != 0
+  if params[:current_bet].to_i != 0 && params[:current_bet].to_i <= session[:pot_total]
     session[:current_bet] = params[:current_bet].to_i
     session[:pot_total] = session[:pot_total] - session[:current_bet]
     redirect '/game'
   else
-    @error = "Please enter valid number."
+    @error = "Please enter valid number that is less than your pot total."
     halt erb(:bet)
   end
 
