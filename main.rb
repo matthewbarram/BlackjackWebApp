@@ -7,6 +7,7 @@ set :sessions, true
 BLACKJACK_AMOUNT = 21
 DEALER_MIN_HIT = 17
 BLACKJACK_RATIO = 1.5
+NEW_PLAYER_BET_AMOUNT = 500
 
 helpers do
     def cal_total(cards)
@@ -113,7 +114,7 @@ post '/new_player' do
     session[:player_name] = params[:player_name].capitalize
     #progress to the game
 
-    session[:pot_total] = 500
+    session[:pot_total] = NEW_PLAYER_BET_AMOUNT
     redirect '/bet'
 end
 
