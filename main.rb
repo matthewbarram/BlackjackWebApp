@@ -59,13 +59,13 @@ helpers do
     def winner(msg)
       session[:winning_bet] = session[:current_bet] * BLACKJACK_RATIO
       session[:pot_total] = session[:pot_total] + session[:winning_bet]
-      @success = "<strong>#{session[:player_name]} wins</strong> #{msg}. Your initial bet of $#{session[:current_bet]} has turned into $#{session[:winning_bet]}. Well done. Your pot is now $#{session[:pot_total]}"
+      @winner = "<strong>#{session[:player_name]} wins</strong> #{msg}. Your initial bet of $#{session[:current_bet]} has turned into $#{session[:winning_bet]}. Well done. Your pot is now $#{session[:pot_total]}"
       @show_hit_or_stay_buttons = false
       @play_again = true
     end
 
     def loser(msg)
-      @error = "Player <strong>#{session[:player_name]} loses #{msg}</strong>. The bet to the value of $#{session[:current_bet]} was lost. Total pot is now: $#{session[:pot_total]}"
+      @loser = "Player <strong>#{session[:player_name]} loses #{msg}</strong>. The bet to the value of $#{session[:current_bet]} was lost. Total pot is now: $#{session[:pot_total]}"
       @show_hit_or_stay_buttons = false
       @play_again = true
       session[:winning_bet] = 0
@@ -73,7 +73,7 @@ helpers do
     end
 
     def tie(msg)
-      @success = "<strong>It's a tie #{msg}"
+      @winner = "<strong>It's a tie #{msg}"
       @show_hit_or_stay_buttons = false
       @play_again = true
     end
@@ -166,7 +166,7 @@ post '/game/player/hit' do
       loser("because they busted")
     end
 
-    erb :game
+    erb :game, layout: false
 end
 
 post '/game/player/stay' do
@@ -214,7 +214,7 @@ get '/game/compare' do
         tie("#{session[:player_name]} and the dealer stayed at #{dealer_total}")
     end
 
-    erb :game
+    erb :game, layout: false
 end
 
 get '/game_over' do
